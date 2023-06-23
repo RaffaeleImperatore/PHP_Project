@@ -1,4 +1,5 @@
 <?php
+
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
 // includiamo database.php e paese.php per poterli usare
@@ -13,11 +14,11 @@ $paese = new Paese($db);
 $stmt = $paese->read();
 $num = $stmt->rowCount();
 // se vengono trovati paesi nel database
-if($num>0){
+if($num>0) {
     // array di paesi
-    $paesi_arr = array();
-    $paesi_arr["records"] = array();
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)){
+    $paesi_arr = [];
+    $paesi_arr["records"] = [];
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         extract($row);
         $paese_item = array(
             "nome" => $nome,
@@ -26,9 +27,8 @@ if($num>0){
         array_push($paesi_arr["records"], $paese_item);
     }
     echo json_encode($paesi_arr);
-}else{
+} else {
     echo json_encode(
         array("message" => "Nessun Paese Trovato.")
     );
 }
-?>

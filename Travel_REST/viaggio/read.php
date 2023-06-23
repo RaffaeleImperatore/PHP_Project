@@ -19,8 +19,8 @@ $stmt = $viaggio->read($paese_partenza, $paese_destinazione, $posti_rimasti);
 $num = $stmt->rowCount();
 
 if ($num > 0) {
-    $viaggi_arr = array();
-    $viaggi_arr["records"] = array();
+    $viaggi_arr = [];
+    $viaggi_arr["records"] = [];
 
     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
         extract($row);

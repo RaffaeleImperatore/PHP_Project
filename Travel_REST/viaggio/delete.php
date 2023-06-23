@@ -1,4 +1,5 @@
 <?php
+
 //headers
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
@@ -39,4 +40,3 @@ if (isset($data->id)) {
     http_response_code(400);
     echo json_encode(array("risposta" => "ID del viaggio mancante."));
 }
-?>
