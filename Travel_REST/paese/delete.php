@@ -19,11 +19,13 @@ $data = json_decode(file_get_contents("php://input"));
 
 $paese->nome = $data->nome;
 
-if($paese->delete()) {
+if ($paese->delete()) {
+    // 200 OK
     http_response_code(200);
-    echo json_encode(array("risposta" => "Il paese e' stato eliminato"));
-} else {
-    //503 service unavailable
-    http_response_code(503);
-    echo json_encode(array("risposta" => "Impossibile eliminare il paese."));
+    echo json_encode(["risposta" => "Il paese è stato eliminato"]);
+    return;
 }
+
+// 503 service unavailable
+http_response_code(503);
+echo json_encode(["risposta" => "Impossibile eliminare il paese."]);

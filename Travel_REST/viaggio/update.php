@@ -14,19 +14,26 @@ $database = new Database();
 $db = $database->getConnection();
 $viaggio = new Viaggio($db);
 
+// ...
 $data = json_decode(file_get_contents("php://input"));
 
-$viaggio->id = $data->id;
-$viaggio->paese_partenza = $data->paese_partenza;
-$viaggio->paese_destinazione = $data->paese_destinazione;
-$viaggio->posti_rimasti = $data->posti_rimasti;
+if (isset($data->id) && isset($data->paese_partenza) && isset($data->paese_destinazione) && isset($data->posti_rimasti)) {
+    $viaggio->id = $data->id;
+    $viaggio->paese_partenza = $data->paese_partenza;
+    $viaggio->paese_destinazione = $data->paese_destinazione;
+    $viaggio->posti_rimasti = $data->posti_rimasti;
 
-if ($viaggio->update()) {
-    http_response_code(200);
-    echo json_encode(array("risposta" => "Viaggio aggiornato"));
+    if ($viaggio->update()) {
+        http_response_code(200);
+        echo json_encode(["risposta" => "Viaggio aggiornato"]);
+    } else {
+        // 503 service unavailable
+        http_response_code(503);
+        echo json_encode(["risposta" => "Impossibile aggiornare il viaggio"]);
+    }
 } else {
-    //503 service unavailable
-    http_response_code(503);
-    echo json_encode(array("risposta" => "Impossibile aggiornare il viaggio"));
+    // 400 bad request
+    http_response_code(400);
+    echo json_encode(["risposta" => "Dati incompleti per l'aggiornamento del viaggio"]);
 }
-?>
+

@@ -15,19 +15,22 @@ $db = $database->getConnection();
 $paese = new Paese($db);
 $data = json_decode(file_get_contents("php://input"));
 
-if (!empty($data->nome)) {
-    $paese->nome = $data->nome;
-
-    if ($paese->create()) {
-        http_response_code(201);
-        echo json_encode(array("message" => "Paese creato correttamente.", "id" => $paese->id));
-    } else {
-        //503 servizio non disponibile
-        http_response_code(503);
-        echo json_encode(array("message" => "Impossibile creare il paese."));
-    }
-} else {
-    //400 bad request
+if (empty($data->nome)) {
+    // 400 bad request
     http_response_code(400);
-    echo json_encode(array("message" => "Impossibile creare il paese, i dati sono incompleti."));
+    echo json_encode(["message" => "Impossibile creare il paese, i dati sono incompleti."]);
+    return;
 }
+
+$paese->nome = $data->nome;
+
+if (!$paese->create()) {
+    // 503 servizio non disponibile
+    http_response_code(503);
+    echo json_encode(["message" => "Impossibile creare il paese."]);
+    return;
+}
+
+// 201 created
+http_response_code(201);
+echo json_encode(["message" => "Paese creato correttamente.", "id" => $paese->id]);

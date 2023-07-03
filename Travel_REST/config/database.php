@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../.env'); // Imposta il percorso corretto del tuo file .env
+$dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/../'); // Imposta il percorso corretto del file .env
 $dotenv->load();
 
 class Database

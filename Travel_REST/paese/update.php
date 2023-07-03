@@ -15,20 +15,22 @@ $db = $database->getConnection();
 $paese = new Paese($db);
 $data = json_decode(file_get_contents("php://input"));
 
-if (!empty($data->id) && !empty($data->nome)) {
-    $paese->id = $data->id;
-    $paese->nome = $data->nome;
-
-    if ($paese->update()) {
-        http_response_code(200);
-        echo json_encode(array("message" => "Paese aggiornato correttamente."));
-    } else {
-        //503 service unavailable
-        http_response_code(503);
-        echo json_encode(array("message" => "Impossibile aggiornare il paese."));
-    }
-} else {
-    //400 bad request
+if (empty($data->id) || empty($data->nome)) {
+    // 400 bad request
     http_response_code(400);
-    echo json_encode(array("message" => "Impossibile aggiornare il paese, i dati sono incompleti."));
+    echo json_encode(["message" => "Impossibile aggiornare il paese, i dati sono incompleti."]);
+    return;
+}
+
+$paese->id = $data->id;
+$paese->nome = $data->nome;
+
+if ($paese->update()) {
+    // 200 OK
+    http_response_code(200);
+    echo json_encode(["message" => "Paese aggiornato correttamente."]);
+} else {
+    // 503 service unavailable
+    http_response_code(503);
+    echo json_encode(["message" => "Impossibile aggiornare il paese."]);
 }

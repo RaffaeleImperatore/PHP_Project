@@ -13,22 +13,25 @@ $paese = new Paese($db);
 // query products
 $stmt = $paese->read();
 $num = $stmt->rowCount();
+
+
 // se vengono trovati paesi nel database
-if($num>0) {
-    // array di paesi
-    $paesi_arr = [];
-    $paesi_arr["records"] = [];
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        extract($row);
-        $paese_item = array(
-            "nome" => $nome,
-            "id" => $id
-        );
-        array_push($paesi_arr["records"], $paese_item);
-    }
-    echo json_encode($paesi_arr);
-} else {
+
+if(!$num) {
     echo json_encode(
-        array("message" => "Nessun Paese Trovato.")
+        ["message" => "Nessun Paese Trovato."]
     );
+    return;
 }
+// array di paesi
+$paesi_arr = [];
+$paesi_arr["records"] = [];
+while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+    extract($row);
+    $paese_item = array(
+        "nome" => $nome,
+        "id" => $id
+    );
+    array_push($paesi_arr["records"], $paese_item);
+}
+echo json_encode($paesi_arr);

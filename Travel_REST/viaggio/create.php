@@ -16,25 +16,27 @@ $viaggio = new Viaggio($db);
 $data = json_decode(file_get_contents("php://input"));
 
 if (
-    !empty($data->paese_partenza) &&
-    !empty($data->paese_destinazione) &&
-    !empty($data->posti_rimasti)
+    empty($data->paese_partenza) ||
+    empty($data->paese_destinazione) ||
+    empty($data->posti_rimasti)
 ) {
-    $viaggio->paese_partenza = $data->paese_partenza;
-    $viaggio->paese_destinazione = $data->paese_destinazione;
-    $viaggio->posti_rimasti = $data->posti_rimasti;
-
-    if ($viaggio->create()) {
-        http_response_code(201);
-        echo json_encode(array("message" => "Viaggio creato correttamente."));
-    } else {
-        //503 servizio non disponibile
-        http_response_code(503);
-        echo json_encode(array("message" => "Impossibile creare il viaggio."));
-    }
-} else {
-    //400 bad request
+    // 400 bad request
     http_response_code(400);
-    echo json_encode(array("message" => "Impossibile creare il viaggio. I dati sono incompleti."));
+    echo json_encode(["message" => "Impossibile creare il viaggio. I dati sono incompleti."]);
+    return;
 }
-?>
+
+$viaggio->paese_partenza = $data->paese_partenza;
+$viaggio->paese_destinazione = $data->paese_destinazione;
+$viaggio->posti_rimasti = $data->posti_rimasti;
+
+if (!$viaggio->create()) {
+    // 503 servizio non disponibile
+    http_response_code(503);
+    echo json_encode(["message" => "Impossibile creare il viaggio."]);
+    return;
+}
+
+// 201 created
+http_response_code(201);
+echo json_encode(["message" => "Viaggio creato correttamente."]);

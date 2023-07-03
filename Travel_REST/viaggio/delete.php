@@ -17,26 +17,29 @@ $viaggio = new Viaggio($db);
 
 $data = json_decode(file_get_contents("php://input"));
 
-if (isset($data->id)) {
-    $viaggio->id = $data->id;
-
-    // Verifica se il viaggio esiste nel database
-    if ($viaggio->exists()) {
-        if ($viaggio->delete()) {
-            http_response_code(200);
-            echo json_encode(array("risposta" => "Il viaggio è stato eliminato"));
-        } else {
-            //503 service unavailable
-            http_response_code(503);
-            echo json_encode(array("risposta" => "Impossibile eliminare il viaggio."));
-        }
-    } else {
-        //404 not found
-        http_response_code(404);
-        echo json_encode(array("risposta" => "Il viaggio non esiste."));
-    }
-} else {
-    //400 bad request
+if (!isset($data->id)) {
+    // 400 bad request
     http_response_code(400);
-    echo json_encode(array("risposta" => "ID del viaggio mancante."));
+    echo json_encode(["risposta" => "ID del viaggio mancante."]);
+    return;
+}
+
+$viaggio->id = $data->id;
+
+// Verifica se il viaggio esiste nel database
+if (!$viaggio->exists()) {
+    // 404 not found
+    http_response_code(404);
+    echo json_encode(["risposta" => "Il viaggio non esiste."]);
+    return;
+}
+
+if ($viaggio->delete()) {
+    // 200 OK
+    http_response_code(200);
+    echo json_encode(["risposta" => "Il viaggio è stato eliminato"]);
+} else {
+    // 503 service unavailable
+    http_response_code(503);
+    echo json_encode(["risposta" => "Impossibile eliminare il viaggio."]);
 }
